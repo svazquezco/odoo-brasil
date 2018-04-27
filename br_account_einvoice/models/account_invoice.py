@@ -28,9 +28,9 @@ class AccountInvoice(models.Model):
 
     invoice_eletronic_ids = fields.One2many(
         'invoice.eletronic', 'invoice_id',
-        u'Documentos Eletrônicos', readonly=True)
+        u'Eletronic Document', readonly=True)
     invoice_model = fields.Char(
-        string="Modelo de Fatura", related="product_document_id.code",
+        string="Invoice Model", related="product_document_id.code",
         readonly=True)
     total_edocs = fields.Integer(string="Total NFe",
                                  compute=_compute_total_edocs)
@@ -261,14 +261,18 @@ class AccountInvoiceLine(models.Model):
     state = fields.Selection(
         string="Status",
         selection=[
-            ('pendente', 'Pendente'),
-            ('transmitido', 'Transmitido'),
+            ('pendente', 'Pending'),
+            ('transmitido', 'Transmitted'),
         ],
         default='pendente',
-        help="""Define a situação eletrônica do item da fatura.
-                Pendente: Ainda não foi transmitido eletronicamente.
-                Transmitido: Já foi transmitido eletronicamente."""
+        # help="""Define a situação eletrônica do item da fatura.
+        #         Pendente: Ainda não foi transmitido eletronicamente.
+        #         Transmitido: Já foi transmitido eletronicamente."""
+        help="""Defines the eletronic situation of the invoice item.
+                Pending: Not transmitted electronically yet.
+                Transmitted: Already transmitted electronically."""
     )
 
     item_pedido_compra = fields.Char(
-        string=u'Item do pedido de compra do cliente')
+        # string=u'Item do pedido de compra do cliente')
+        string=u'Customer\'s purchase order item')

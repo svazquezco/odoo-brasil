@@ -8,7 +8,7 @@ import copy
 from datetime import datetime, timedelta
 import dateutil.relativedelta as relativedelta
 from odoo.exceptions import UserError
-from odoo import api, fields, models, tools
+from odoo import api, fields, models, tools, _
 from odoo.addons import decimal_precision as dp
 from odoo.addons.br_account.models.cst import CST_ICMS
 from odoo.addons.br_account.models.cst import CSOSN_SIMPLES
@@ -27,22 +27,22 @@ class InvoiceEletronic(models.Model):
     _inherit = ['mail.thread']
 
     code = fields.Char(
-        u'Código', size=100, required=True, readonly=True, states=STATE)
+        u'Code', size=100, required=True, readonly=True, states=STATE)
     name = fields.Char(
-        u'Nome', size=100, required=True, readonly=True, states=STATE)
+        u'Name', size=100, required=True, readonly=True, states=STATE)
     company_id = fields.Many2one(
-        'res.company', u'Empresa', readonly=True, states=STATE)
+        'res.company', u'Company', readonly=True, states=STATE)
     state = fields.Selection(
-        [('draft', u'Provisório'),
-         ('edit', 'Editar'),
-         ('error', 'Erro'),
-         ('done', 'Enviado'),
-         ('cancel', 'Cancelado')],
+        [('draft', u'Provisional'),
+         ('edit', 'Edit'),
+         ('error', 'Error'),
+         ('done', 'Sent'),
+         ('cancel', 'Cancelled')],
         string=u'State', default='draft', readonly=True, states=STATE)
     tipo_operacao = fields.Selection(
-        [('entrada', 'Entrada'),
-         ('saida', 'Saída')],
-        string=u'Tipo de Operação', readonly=True, states=STATE)
+        [('entrada', 'Incoming'),
+         ('saida', 'Outgoing')],
+        string=u'Operation type', readonly=True, states=STATE)
     model = fields.Selection(
         [('55', u'55 - NFe'),
          ('65', u'65 - NFCe'),
@@ -52,67 +52,67 @@ class InvoiceEletronic(models.Model):
          ('009', u'NFS-e - Provedor SUSESU'),
          ('010', u'NFS-e Imperial - Petrópolis'),
          ('012', u'NFS-e - Florianópolis')],
-        string=u'Modelo', readonly=True, states=STATE)
+        string=u'Model', readonly=True, states=STATE)
     serie = fields.Many2one(
-        'br_account.document.serie', string=u'Série',
+        'br_account.document.serie', string=u'Series',
         readonly=True, states=STATE)
-    serie_documento = fields.Char(string=u'Série Documento', size=6)
+    serie_documento = fields.Char(string=u'Document Series', size=6)
     numero = fields.Integer(
-        string=u'Número', readonly=True, states=STATE)
+        string=u'Number', readonly=True, states=STATE)
     numero_controle = fields.Integer(
-        string=u'Número de Controle', readonly=True, states=STATE)
+        string=u'Control Number', readonly=True, states=STATE)
     data_emissao = fields.Datetime(
-        string=u'Data emissão', readonly=True, states=STATE)
+        string=u'Emission Date', readonly=True, states=STATE)
     data_fatura = fields.Datetime(
-        string=u'Data Entrada/Saída', readonly=True, states=STATE)
+        string=u'Incoming/Outgoing Date', readonly=True, states=STATE)
     data_autorizacao = fields.Char(
-        string=u'Data de autorização', size=30, readonly=True, states=STATE)
+        string=u'Authorization Date', size=30, readonly=True, states=STATE)
     ambiente = fields.Selection(
-        [('homologacao', u'Homologação'),
-         ('producao', u'Produção')],
-        string=u'Ambiente', readonly=True, states=STATE)
+        [('homologacao', u'Homologation'),
+         ('producao', u'Production')],
+        string=u'Environment', readonly=True, states=STATE)
     finalidade_emissao = fields.Selection(
         [('1', u'1 - Normal'),
-         ('2', u'2 - Complementar'),
-         ('3', u'3 - Ajuste'),
-         ('4', u'4 - Devolução')],
-        string=u'Finalidade', help=u"Finalidade da emissão de NFe",
+         ('2', u'2 - Complementary'),
+         ('3', u'3 - Ajustment'),
+         ('4', u'4 - Devolution')],
+        string=u'Purpose', help=u"NFe emission\'s Purpose",
         readonly=True, states=STATE)
     invoice_id = fields.Many2one(
-        'account.invoice', string=u'Fatura', readonly=True, states=STATE)
+        'account.invoice', string=u'Invoice', readonly=True, states=STATE)
     partner_id = fields.Many2one(
-        'res.partner', string=u'Parceiro', readonly=True, states=STATE)
+        'res.partner', string=u'Partner', readonly=True, states=STATE)
     commercial_partner_id = fields.Many2one(
         'res.partner', string='Commercial Entity',
         related='partner_id.commercial_partner_id', store=True)
     partner_shipping_id = fields.Many2one(
-        'res.partner', string=u'Entrega', readonly=True, states=STATE)
+        'res.partner', string=u'Delivery', readonly=True, states=STATE)
     payment_term_id = fields.Many2one(
-        'account.payment.term', string=u'Forma pagamento',
+        'account.payment.term', string=u'Payment Mode',
         readonly=True, states=STATE)
     fiscal_position_id = fields.Many2one(
-        'account.fiscal.position', string=u'Posição Fiscal',
+        'account.fiscal.position', string=u'Fiscal Position',
         readonly=True, states=STATE)
     eletronic_item_ids = fields.One2many(
-        'invoice.eletronic.item', 'invoice_eletronic_id', string=u"Linhas",
+        'invoice.eletronic.item', 'invoice_eletronic_id', string=u"Lines",
         readonly=True, states=STATE)
     eletronic_event_ids = fields.One2many(
-        'invoice.eletronic.event', 'invoice_eletronic_id', string=u"Eventos",
+        'invoice.eletronic.event', 'invoice_eletronic_id', string=u"Events",
         readonly=True, states=STATE)
     valor_bruto = fields.Monetary(
-        string=u'Total Produtos', readonly=True, states=STATE)
+        string=u'Total Products', readonly=True, states=STATE)
     valor_frete = fields.Monetary(
-        string=u'Total Frete', readonly=True, states=STATE)
+        string=u'Total Freight', readonly=True, states=STATE)
     valor_seguro = fields.Monetary(
-        string=u'Total Seguro', readonly=True, states=STATE)
+        string=u'Total Insurance', readonly=True, states=STATE)
     valor_desconto = fields.Monetary(
-        string=u'Total Desconto', readonly=True, states=STATE)
+        string=u'Total Discount', readonly=True, states=STATE)
     valor_despesas = fields.Monetary(
-        string=u'Total Despesas', readonly=True, states=STATE)
+        string=u'Total Expenses', readonly=True, states=STATE)
     valor_bc_icms = fields.Monetary(
         string=u"Base de Cálculo ICMS", readonly=True, states=STATE)
     valor_icms = fields.Monetary(
-        string=u"Total do ICMS", readonly=True, states=STATE)
+        string=u"Total ICMS", readonly=True, states=STATE)
     valor_icms_deson = fields.Monetary(
         string=u'ICMS Desoneração', readonly=True, states=STATE)
     valor_bc_icmsst = fields.Monetary(
@@ -129,10 +129,10 @@ class InvoiceEletronic(models.Model):
     valor_cofins = fields.Monetary(
         string=u"Total COFINS", readonly=True, states=STATE)
     valor_estimado_tributos = fields.Monetary(
-        string=u"Tributos Estimados", readonly=True, states=STATE)
+        string=u"Estimated Tax Value", readonly=True, states=STATE)
 
     valor_servicos = fields.Monetary(
-        string=u"Total Serviços", readonly=True, states=STATE)
+        string=u"Total Service", readonly=True, states=STATE)
     valor_bc_issqn = fields.Monetary(
         string=u"Base ISS", readonly=True, states=STATE)
     valor_issqn = fields.Monetary(
@@ -166,25 +166,25 @@ class InvoiceEletronic(models.Model):
         'res.currency', related='company_id.currency_id',
         string="Company Currency")
     valor_final = fields.Monetary(
-        string=u'Valor Final', readonly=True, states=STATE)
+        string=u'Final Amount', readonly=True, states=STATE)
 
     informacoes_legais = fields.Text(
-        string=u'Informações legais', readonly=True, states=STATE)
+        string=u'Legal Info', readonly=True, states=STATE)
     informacoes_complementares = fields.Text(
-        string=u'Informações complementares', readonly=True, states=STATE)
+        string=u'Complementary Info', readonly=True, states=STATE)
 
     codigo_retorno = fields.Char(
-        string=u'Código Retorno', readonly=True, states=STATE)
+        string=u'Return Code', readonly=True, states=STATE)
     mensagem_retorno = fields.Char(
-        string=u'Mensagem Retorno', readonly=True, states=STATE)
+        string=u'Return Message', readonly=True, states=STATE)
     numero_nfe = fields.Char(
-        string=u"Numero Formatado NFe", readonly=True, states=STATE)
+        string=u"Formatted NFe Number", readonly=True, states=STATE)
 
-    xml_to_send = fields.Binary(string="Xml a Enviar", readonly=True)
+    xml_to_send = fields.Binary(string="Xml to be Sent", readonly=True)
     xml_to_send_name = fields.Char(
-        string=u"Nome xml a ser enviado", size=100, readonly=True)
+        string=u"Xml\'s name to be Sent", size=100, readonly=True)
 
-    email_sent = fields.Boolean(string=u"Email enviado", default=False,
+    email_sent = fields.Boolean(string=u"Email Sent", default=False,
                                 readonly=True, states=STATE)
 
     def _create_attachment(self, prefix, event, data):
@@ -210,101 +210,104 @@ class InvoiceEletronic(models.Model):
         errors = []
         # Emitente
         if not self.company_id.nfe_a1_file:
-            errors.append(u'Emitente - Certificado Digital')
+            errors.append(_(u'Issuer - Digital Certificate'))
         if not self.company_id.nfe_a1_password:
-            errors.append(u'Emitente - Senha do Certificado Digital')
+            errors.append(_(u'Issuer - Digital Certificate\' Password'))
         if not self.company_id.partner_id.legal_name:
-            errors.append(u'Emitente - Razão Social')
+            errors.append(_(u'Issuer - Legal Name'))
         if not self.company_id.partner_id.cnpj_cpf:
-            errors.append(u'Emitente - CNPJ/CPF')
+            errors.append(_(u'Issuer - CNPJ/CPF'))
         if not self.company_id.partner_id.street:
-            errors.append(u'Emitente / Endereço - Logradouro')
+            errors.append(_(u'Issuer / Address - Street'))
         if not self.company_id.partner_id.number:
-            errors.append(u'Emitente / Endereço - Número')
+            errors.append(_(u'Issuer / Address - Number'))
         if not self.company_id.partner_id.zip or len(
                 re.sub(r"\D", "", self.company_id.partner_id.zip)) != 8:
-            errors.append(u'Emitente / Endereço - CEP')
+            errors.append(_(u'Issuer / Address - Zip Code'))
         if not self.company_id.partner_id.state_id:
-            errors.append(u'Emitente / Endereço - Estado')
+            errors.append(_(u'Issuer / Address - State'))
         else:
             if not self.company_id.partner_id.state_id.ibge_code:
-                errors.append(u'Emitente / Endereço - Cód. do IBGE do estado')
+                errors.append(_(
+                    u'Issuer / Address - State\'s IBGE Code'))
             if not self.company_id.partner_id.state_id.name:
-                errors.append(u'Emitente / Endereço - Nome do estado')
+                errors.append(_(u'Issuer / Address - State\'s Name'))
 
         if not self.company_id.partner_id.city_id:
-            errors.append(u'Emitente / Endereço - município')
+            errors.append(_(u'Issuer / Address - City'))
         else:
             if not self.company_id.partner_id.city_id.name:
-                errors.append(u'Emitente / Endereço - Nome do município')
+                errors.append(_(u'Issuer / Address - City\'s Name'))
             if not self.company_id.partner_id.city_id.ibge_code:
-                errors.append(u'Emitente/Endereço - Cód. do IBGE do município')
+                errors.append(_(
+                    u'Issuer/Address - City\'s IBGE Code'))
 
         if not self.company_id.partner_id.country_id:
-            errors.append(u'Emitente / Endereço - país')
+            errors.append(_(u'Issuer / Address - Country'))
         else:
             if not self.company_id.partner_id.country_id.name:
-                errors.append(u'Emitente / Endereço - Nome do país')
+                errors.append(_(u'Issuer / Address - Country\'s Name'))
             if not self.company_id.partner_id.country_id.bc_code:
-                errors.append(u'Emitente / Endereço - Código do BC do país')
+                errors.append(_(u'Issuer / Address - Country\'s BC Code'))
 
         partner = self.partner_id.commercial_partner_id
         company = self.company_id
         # Destinatário
         if partner.is_company and not partner.legal_name:
-            errors.append(u'Destinatário - Razão Social')
+            errors.append(_(u'Receiver - Legal Name'))
 
         if partner.country_id.id == company.partner_id.country_id.id:
             if not partner.cnpj_cpf:
-                errors.append(u'Destinatário - CNPJ/CPF')
+                errors.append(_(u'Receiver - CNPJ/CPF'))
 
         if not partner.street:
-            errors.append(u'Destinatário / Endereço - Logradouro')
+            errors.append(_(u'Receiver / Address - Street'))
 
         if not partner.number:
-            errors.append(u'Destinatário / Endereço - Número')
+            errors.append(_(u'Receiver / Address - Number'))
 
         if partner.country_id.id == company.partner_id.country_id.id:
             if not partner.zip or len(
                     re.sub(r"\D", "", partner.zip)) != 8:
-                errors.append(u'Destinatário / Endereço - CEP')
+                errors.append(_(u'Receiver / Address - CEP'))
 
         if partner.country_id.id == company.partner_id.country_id.id:
             if not partner.state_id:
-                errors.append(u'Destinatário / Endereço - Estado')
+                errors.append(_(u'Receiver / Address - State'))
             else:
                 if not partner.state_id.ibge_code:
-                    errors.append(u'Destinatário / Endereço - Código do IBGE \
-                                  do estado')
+                    errors.append(_(u'Receiver / Address - State\'s\
+                    IBGE Number'))
                 if not partner.state_id.name:
-                    errors.append(u'Destinatário / Endereço - Nome do estado')
+                    errors.append(_(
+                        u'Receiver / Address - State\'s Name'))
 
         if partner.country_id.id == company.partner_id.country_id.id:
             if not partner.city_id:
-                errors.append(u'Destinatário / Endereço - Município')
+                errors.append(_(u'Receiver / Address - City'))
             else:
                 if not partner.city_id.name:
-                    errors.append(u'Destinatário / Endereço - Nome do \
-                                  município')
+                    errors.append(_(u'Receiver / Address - City\'s name'))
                 if not partner.city_id.ibge_code:
-                    errors.append(u'Destinatário / Endereço - Código do IBGE \
-                                  do município')
+                    errors.append(_(u'Receiver / Address - City\'s IBGE \
+                                  code'))
 
         if not partner.country_id:
-            errors.append(u'Destinatário / Endereço - País')
+            errors.append(_(u'Receiver / Address - Country'))
         else:
             if not partner.country_id.name:
-                errors.append(u'Destinatário / Endereço - Nome do país')
+                errors.append(_(u'Receiver / Address - Country\'s Name'))
             if not partner.country_id.bc_code:
-                errors.append(u'Destinatário / Endereço - Cód. do BC do país')
+                errors.append(_(
+                    u'Receiver / Address - Country\'s BC Code'))
 
         # produtos
         for eletr in self.eletronic_item_ids:
             if eletr.product_id:
                 if not eletr.product_id.default_code:
-                    errors.append(
-                        u'Prod: %s - Código do produto' % (
-                            eletr.product_id.name))
+                    errors.append(_(
+                        u'Prod: %s - Product\'s Code' % (
+                            eletr.product_id.name)))
         return errors
 
     @api.multi
@@ -383,7 +386,8 @@ class InvoiceEletronic(models.Model):
         errors = self._hook_validation()
         if len(errors) > 0:
             msg = u"\n".join(
-                [u"Por favor corrija os erros antes de prosseguir"] + errors)
+                [_(u"Before proceeding, please revise the following errors")] +
+                errors)
             self.unlink()
             raise UserError(msg)
 
@@ -424,8 +428,8 @@ class InvoiceEletronic(models.Model):
     def unlink(self):
         for item in self:
             if not item.can_unlink():
-                raise UserError(
-                    u'Documento Eletrônico enviado - Proibido excluir')
+                raise UserError(_(
+                    u'Eletronic Document Already Sent - Forbidden to Exclude'))
         super(InvoiceEletronic, self).unlink()
 
     def log_exception(self, exc):
@@ -454,7 +458,7 @@ class InvoiceEletronic(models.Model):
     def send_email_nfe(self):
         mail = self.env.user.company_id.nfe_email_template
         if not mail:
-            raise UserError('Modelo de email padrão não configurado')
+            raise UserError(_(u'Default Email model is not Configurated yet.'))
         atts = self._find_attachment_ids_email()
         values = {
             "attachment_ids": atts + mail.attachment_ids.ids
@@ -477,10 +481,10 @@ class InvoiceEletronicEvent(models.Model):
     _name = 'invoice.eletronic.event'
     _order = 'id desc'
 
-    code = fields.Char(string=u'Código', readonly=True, states=STATE)
-    name = fields.Char(string=u'Mensagem', readonly=True, states=STATE)
+    code = fields.Char(string=u'Code', readonly=True, states=STATE)
+    name = fields.Char(string=u'Message', readonly=True, states=STATE)
     invoice_eletronic_id = fields.Many2one(
-        'invoice.eletronic', string=u"Fatura Eletrônica",
+        'invoice.eletronic', string=u"Eletronic Invoice",
         readonly=True, states=STATE)
     state = fields.Selection(
         related='invoice_eletronic_id.state', string="State")
@@ -489,11 +493,11 @@ class InvoiceEletronicEvent(models.Model):
 class InvoiceEletronicItem(models.Model):
     _name = 'invoice.eletronic.item'
 
-    name = fields.Text(u'Nome', readonly=True, states=STATE)
+    name = fields.Text(u'Name', readonly=True, states=STATE)
     company_id = fields.Many2one(
-        'res.company', u'Empresa', index=True, readonly=True, states=STATE)
+        'res.company', u'Company', index=True, readonly=True, states=STATE)
     invoice_eletronic_id = fields.Many2one(
-        'invoice.eletronic', string=u'Documento', readonly=True, states=STATE)
+        'invoice.eletronic', string=u'Document', readonly=True, states=STATE)
     currency_id = fields.Many2one(
         'res.currency', related='company_id.currency_id',
         string="Company Currency")
@@ -501,50 +505,50 @@ class InvoiceEletronicItem(models.Model):
         related='invoice_eletronic_id.state', string="State")
 
     product_id = fields.Many2one(
-        'product.product', string=u'Produto', readonly=True, states=STATE)
+        'product.product', string=u'Product', readonly=True, states=STATE)
     tipo_produto = fields.Selection(
-        [('product', 'Produto'),
-         ('service', u'Serviço')],
-        string="Tipo Produto", readonly=True, states=STATE)
+        [('product', 'Product'),
+         ('service', u'Service')],
+        string="Product Type", readonly=True, states=STATE)
     cfop = fields.Char(u'CFOP', size=5, readonly=True, states=STATE)
     ncm = fields.Char(u'NCM', size=10, readonly=True, states=STATE)
 
     uom_id = fields.Many2one(
-        'product.uom', string=u'Unidade Medida', readonly=True, states=STATE)
+        'product.uom', string=u'Unit of Measure', readonly=True, states=STATE)
     quantidade = fields.Float(
-        string=u'Quantidade', readonly=True, states=STATE)
+        string=u'Quantity', readonly=True, states=STATE)
     preco_unitario = fields.Monetary(
-        string=u'Preço Unitário', digits=dp.get_precision('Account'),
+        string=u'Unit price', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
 
     item_pedido_compra = fields.Char(
-        string=u'Item do pedido de compra do cliente')
+        string=u'Customer\'s purchase order line')
 
     frete = fields.Monetary(
-        string=u'Frete', digits=dp.get_precision('Account'),
+        string=u'Freight', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
     seguro = fields.Monetary(
-        string=u'Seguro', digits=dp.get_precision('Account'),
+        string=u'Insurance', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
     desconto = fields.Monetary(
-        string=u'Desconto', digits=dp.get_precision('Account'),
+        string=u'Discount', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
     outras_despesas = fields.Monetary(
-        string=u'Outras despesas', digits=dp.get_precision('Account'),
+        string=u'Other expenses', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
 
     tributos_estimados = fields.Monetary(
-        string=u'Valor Estimado Tributos', digits=dp.get_precision('Account'),
+        string=u'Estimated Tax Value', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
 
     valor_bruto = fields.Monetary(
-        string=u'Valor Bruto', digits=dp.get_precision('Account'),
+        string=u'Gross Value', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
     valor_liquido = fields.Monetary(
-        string=u'Valor Líquido', digits=dp.get_precision('Account'),
+        string=u'Net Value', digits=dp.get_precision('Account'),
         readonly=True, states=STATE)
     indicador_total = fields.Selection(
-        [('0', u'0 - Não'), ('1', u'1 - Sim')],
+        [('0', u'0 - No'), ('1', u'1 - Yes')],
         string=u"Compõe Total da Nota?", default='1',
         readonly=True, states=STATE)
 
@@ -729,4 +733,4 @@ class InvoiceEletronicItem(models.Model):
     account_invoice_line_id = fields.Many2one(
         string="Account Invoice Line",
         comodel_name="account.invoice.line",
-        )
+    )
