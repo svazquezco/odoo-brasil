@@ -553,9 +553,9 @@ class InvoiceEletronicItem(models.Model):
         readonly=True, states=STATE)
 
     origem = fields.Selection(
-        ORIGEM_PROD, string=u'Origem Mercadoria', readonly=True, states=STATE)
+        ORIGEM_PROD, string=u'Goods Origin', readonly=True, states=STATE)
     icms_cst = fields.Selection(
-        CST_ICMS + CSOSN_SIMPLES, string=u'Situação Tributária',
+        CST_ICMS + CSOSN_SIMPLES, string=u'Tributary Situation',
         readonly=True, states=STATE)
     icms_aliquota = fields.Float(
         string=u'Alíquota', digits=dp.get_precision('Account'),
@@ -583,7 +583,7 @@ class InvoiceEletronicItem(models.Model):
         readonly=True, states=STATE)
 
     icms_st_tipo_base = fields.Selection(
-        [('0', u'0- Preço tabelado ou máximo  sugerido'),
+        [('0', u'0 - Preço tabelado ou máximo sugerido'),
          ('1', u'1 - Lista Negativa (valor)'),
          ('2', u'2 - Lista Positiva (valor)'),
          ('3', u'3 - Lista Neutra (valor)'),

@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="br_base.view_company_form_inherited"/>
         <field name="arch" type="xml">
             <notebook position="inside">
-                <page name="integracao_nfse" string="Integração NFS-e">
+                <page name="integracao_nfse" string="NFS-e Integration">
                     <group>
                         <field name="tipo_ambiente_nfse" />
                     </group>

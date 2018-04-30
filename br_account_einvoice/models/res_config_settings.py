@@ -9,7 +9,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     nfe_email_template = fields.Many2one(
-        'mail.template', string="Template de Email para NFe",
+        'mail.template', string="NFe's Email Template",
         domain=[('model_id.model', '=', 'account.invoice')])
 
     def get_values(self):

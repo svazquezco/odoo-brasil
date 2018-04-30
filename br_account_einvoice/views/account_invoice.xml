@@ -12,7 +12,7 @@
                     <field name="total_edocs" /> <span> E-Docs</span>
                 </button>
                  <button name="action_preview_danfe" type="object" class="oe_stat_button" icon="fa-file-pdf-o"
-                    string="Imprimir Danfe"
+                    string="Print Danfe"
                     attrs="{'invisible': [('total_edocs', '=', 0)]}">
                 </button>
             </div>
@@ -31,7 +31,7 @@
                     <field name="total_edocs" /> <span> E-Docs</span>
                 </button>
                  <button name="action_preview_danfe" type="object" class="oe_stat_button" icon="fa-file-pdf-o"
-                    string="Imprimir Danfe"
+                    string="Print Danfe"
                     attrs="{'invisible': [('total_edocs', '=', 0)]}">
                 </button>
             </div>

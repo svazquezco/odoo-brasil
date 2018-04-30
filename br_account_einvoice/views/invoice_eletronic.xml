@@ -6,9 +6,9 @@
             <field name="name">invoice.eletronic.item.form</field>
             <field name="model">invoice.eletronic.item</field>
             <field name="arch" type="xml">
-                <form string="Item Documento">
+                <form string="Document Item">
                     <notebook>
-                        <page string="Dados do produto">
+                        <page string="Goods Information">
                             <group>
                                 <group>
                                     <field name="state" invisible="1" />
@@ -37,7 +37,7 @@
                         </page>
 
                         <page name="icms" string="ICMS" attrs="{'invisible': [('tipo_produto', '=', 'service')]}">
-                            <group name="detalhes_icms" string="Detalhes do ICMS">
+                            <group name="detalhes_icms" string="ICMS's Details">
                                 <group>
                                     <field name="icms_cst" />
                                     <field name="origem"/>
@@ -98,7 +98,7 @@
                             </group>
                         </page>
                         <page name="ipi" string="IPI" attrs="{'invisible': [('tipo_produto','==', 'service')]}">
-                            <group string="Detalhes do IPI">
+                            <group string="IPI's Details">
                                 <group>
                                     <field name="ipi_cst" />
                                 </group>
@@ -111,8 +111,8 @@
                                 </group>
                             </group>
                         </page>
-                        <page name="pis" string="PIS">
-                            <group string="Detalhes do PIS">
+                        <page name="pis" string="PIS's Details">
+                            <group string="PIS">
                                 <group>
                                     <field name="pis_cst" />
                                 </group>
@@ -126,7 +126,7 @@
 
                         </page>
                         <page name="cofins" string="COFINS">
-                            <group string="Detalhes do COFINS">
+                            <group string="COFINS's Details">
                                 <group>
                                     <field name="cofins_cst"/>
                                 </group>
@@ -139,7 +139,7 @@
                             </group>
                         </page>
                         <page name="ii" string="II" attrs="{'invisible': [('tipo_produto','==', 'service')]}">
-                            <group string="Detalhes do Imposto de Importação">
+                            <group string="Importation tax's Details">
                                 <field name="ii_base_calculo"/>
                                 <field name="ii_aliquota"/>
                                 <field name="ii_valor_despesas"/>
@@ -156,13 +156,13 @@
             <field name="name">br.account.invoice.eletronic.form</field>
             <field name="model">invoice.eletronic</field>
             <field name="arch" type="xml">
-                <form string="Documento Eletrônico">
+                <form string="Eletrônic Document">
                     <header>
-                        <button name="action_send_eletronic_invoice" states="draft" string="Enviar" type="object" class="oe_highlight"/>
-                        <button name="action_back_to_draft" states="edit,error" string="Rascunho" type="object"/>
-                        <button name="action_edit_edoc" states="draft,error" string="Habilitar Edição" type="object" groups="br_account_einvoice.group_edit_edoc"/>
-                        <button name="action_cancel_document" confirm="Confirma o cancelamento do documento?" states="done" string="Cancelar" type="object"/>
-                        <button name="send_email_nfe" string="Reenviar Email" type="object" attrs="{'invisible': [('state', '!=', 'done')]}" />
+                        <button name="action_send_eletronic_invoice" states="draft" string="Send" type="object" class="oe_highlight"/>
+                        <button name="action_back_to_draft" states="edit,error" string="Draft" type="object"/>
+                        <button name="action_edit_edoc" states="draft,error" string="Enable Editing" type="object" groups="br_account_einvoice.group_edit_edoc"/>
+                        <button name="action_cancel_document" confirm="Do you really want to cancel this document?" states="done" string="Cancel" type="object"/>
+                        <button name="send_email_nfe" string="Resend Email" type="object" attrs="{'invisible': [('state', '!=', 'done')]}" />
                         <field name="state" widget="statusbar" statusbar_visible="draft,done" />
                     </header>
                     <div name="alertas" class="alert alert-info" role="alert" style="margin-bottom:0px;">
@@ -173,7 +173,7 @@
                             </div>
                         </div>
                     </div>
-                    <sheet string="Documento Eletronico">
+                    <sheet string="Eletronic Document">
                         <group>
                             <group>
                                 <field name="model"/>
@@ -189,7 +189,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page name="identificacao" string="Identificação">
+                            <page name="identificacao" string="Identification">
                                 <group>
                                     <group>
                                         <field name="code"/>
@@ -227,9 +227,9 @@
                                     </field>
                                 </group>
                             </page>
-                            <page name="totais" string="Totais">
+                            <page name="totais" string="Totals">
                                 <group>
-                                    <group name="totais" string="Totais">
+                                    <group name="totais" string="Totals">
                                         <field name="valor_bruto" />
                                         <field name="valor_frete" />
                                         <field name="valor_seguro" />
@@ -237,7 +237,7 @@
                                         <field name="valor_despesas" />
                                         <field name="valor_final" />
                                     </group>
-                                    <group name="impostos" string="Impostos">
+                                    <group name="impostos" string="Taxes">
                                         <field name="valor_bc_icms" />
                                         <field name="valor_icms" />
                                         <field name="valor_icms_deson" />
@@ -251,7 +251,7 @@
                                     </group>
                                 </group>
                                 <group>
-                                    <group name="servico" string="Totais de Serviço">
+                                    <group name="servico" string="Service's Total">
                                         <field name="valor_servicos" />
                                         <field name="valor_bc_issqn" />
                                         <field name="valor_issqn" />
@@ -271,16 +271,16 @@
                                     </group>
                                 </group>
                             </page>
-                            <page string="Observações">
+                            <page string="Observations">
                                 <group>
                                     <field name="informacoes_legais" />
                                     <field name="informacoes_complementares" />
                                 </group>
                             </page>
-                            <page name="eventos" string="Eventos">
+                            <page name="eventos" string="Events">
                                 <group>
                                     <field name="eletronic_event_ids" nolabel="1">
-                                        <tree name="Eventos">
+                                        <tree name="Events">
                                             <field name="state" invisible="1" />
                                             <field name="code" />
                                             <field name="name" />
@@ -304,7 +304,7 @@
             <field name="name">sped.eletronic.doc.form</field>
             <field name="model">invoice.eletronic</field>
             <field name="arch" type="xml">
-                <tree string="Documentos Eletrônicos">
+                <tree string="Eletronic Documents">
                     <field name="state" />
                     <field name="model"/>
                     <field name="numero"/>
@@ -325,7 +325,7 @@
         </record>
 
         <record id="action_sped_base_eletronic_doc" model="ir.actions.act_window">
-            <field name="name">Documentos Eletrônicos</field>
+            <field name="name">Eletronic Documents</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">invoice.eletronic</field>
             <field name="view_mode">tree,form</field>
